@@ -17,7 +17,7 @@ router = APIRouter()
 def _round2(x: Decimal) -> Decimal:
     return x.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
-@router.post("/", response_model=PaymentOut)
+@router.post("", response_model=PaymentOut)
 def create_payment(payload: PaymentCreate, db: Session = Depends(get_db), current: User = Depends(require_approved_user)) -> Payment:
     if payload.to_user_id == current.id:
         raise HTTPException(status_code=400, detail="to_user_id cannot be yourself")
@@ -44,7 +44,7 @@ def create_payment(payload: PaymentCreate, db: Session = Depends(get_db), curren
     db.refresh(payment)
     return payment
 
-@router.get("/", response_model=list[PaymentOut])
+@router.get("", response_model=list[PaymentOut])
 def list_payments(
     db: Session = Depends(get_db),
     _: User = Depends(require_approved_user),

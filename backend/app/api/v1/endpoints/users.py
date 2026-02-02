@@ -11,7 +11,7 @@ from app.schemas.user import UserCreate, UserOut, UserApproveRequest
 
 router = APIRouter()
 
-@router.post("/", response_model=UserOut)
+@router.post("", response_model=UserOut)
 def register_user(payload: UserCreate, db: Session = Depends(get_db)) -> User:
     exists = db.scalar(select(User).where(User.username == payload.username))
     if exists:
@@ -38,7 +38,7 @@ def register_user(payload: UserCreate, db: Session = Depends(get_db)) -> User:
 def me(current: User = Depends(get_current_user)) -> User:
     return current
 
-@router.get("/", response_model=list[UserOut])
+@router.get("", response_model=list[UserOut])
 def list_users(db: Session = Depends(get_db), _: User = Depends(get_current_user)) -> list[User]:
     users = db.scalars(select(User).order_by(User.id.asc())).all()
     return list(users)

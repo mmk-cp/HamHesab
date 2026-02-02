@@ -21,7 +21,7 @@ uvicorn app.main:app --reload
 #### Front
 
 ```bash
-cd front
+cd frontend
 npm install
 
 # .env.local بساز

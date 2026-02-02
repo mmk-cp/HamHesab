@@ -16,7 +16,7 @@ router = APIRouter()
 def _round2(x: Decimal) -> Decimal:
     return x.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
-@router.get("/", response_model=SettlementReport)
+@router.get("", response_model=SettlementReport)
 def settlement_for_month(
     shamsi_year: int,
     shamsi_month: int,

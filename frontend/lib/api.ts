@@ -1,6 +1,7 @@
 import { getToken, clearToken } from "@/lib/auth";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
+const RAW_API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE = RAW_API_BASE ? RAW_API_BASE.replace(/\/+$/, "") : undefined;
 
 if (!API_BASE) {
   // eslint-disable-next-line no-console
@@ -18,7 +19,8 @@ export async function apiFetch<T>(path: string, options: FetchOptions = {}): Pro
     if (token) headers.set("Authorization", `Bearer ${token}`);
   }
 
-  const res = await fetch(`${API_BASE}${path}`, {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const res = await fetch(`${API_BASE}${normalizedPath}`, {
     ...options,
     headers,
   });

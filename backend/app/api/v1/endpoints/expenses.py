@@ -18,7 +18,7 @@ router = APIRouter()
 def _round2(x: Decimal) -> Decimal:
     return x.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
-@router.post("/", response_model=ExpenseOut)
+@router.post("", response_model=ExpenseOut)
 def create_expense(payload: ExpenseCreate, db: Session = Depends(get_db), current: User = Depends(require_approved_user)) -> Expense:
     participant_ids = list(dict.fromkeys(payload.participant_user_ids))
     if not participant_ids:
@@ -72,7 +72,7 @@ def create_expense(payload: ExpenseCreate, db: Session = Depends(get_db), curren
     db.refresh(expense)
     return expense
 
-@router.get("/", response_model=list[ExpenseOut])
+@router.get("", response_model=list[ExpenseOut])
 def list_expenses(
     db: Session = Depends(get_db),
     _: User = Depends(require_approved_user),
