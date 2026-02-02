@@ -155,9 +155,9 @@ export default function DashboardPage() {
             <div className="grid gap-3">
               {payments.map((p, idx) => (
                 <Card key={p.id} className="p-4 animate-rise" style={{ animationDelay: `${idx * 40}ms` }}>
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
                     <div className="min-w-0">
-                      <div className="font-semibold truncate">
+                      <div className="font-semibold">
                         {nameOf(users, p.from_user_id)} {"→"} {nameOf(users, p.to_user_id)}
                       </div>
                       <div className="text-xs text-[var(--muted)] mt-1">

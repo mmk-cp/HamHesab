@@ -27,6 +27,12 @@ export default function AdminPage() {
     enabled: !!user?.is_admin,
   });
 
+  const usersQ = useQuery({
+    queryKey: ["users"],
+    queryFn: () => apiFetch<User[]>("/users", { auth: true }),
+    enabled: !!user?.is_admin,
+  });
+
   const approve = useMutation({
     mutationFn: async (id: number) =>
       apiFetch<User>(`/users/${id}/approve`, { method: "PATCH", auth: true, body: JSON.stringify({ is_approved: true }) }),
@@ -39,6 +45,7 @@ export default function AdminPage() {
   });
 
   const pending = pendingQ.data || [];
+  const approved = (usersQ.data || []).filter((u) => u.is_approved);
 
   return (
     <ProtectedRoute>
@@ -72,6 +79,31 @@ export default function AdminPage() {
             ))}
           </div>
         )}
+
+        <div className="space-y-3 pt-2">
+          <div className="font-semibold font-display">کاربران تایید شده</div>
+          {usersQ.isLoading ? (
+            <div className="text-sm text-[var(--muted)]">در حال دریافت…</div>
+          ) : approved.length === 0 ? (
+            <Card className="p-4 text-sm text-[var(--muted)]">کاربر تایید شده‌ای وجود ندارد.</Card>
+          ) : (
+            <div className="grid gap-3">
+              {approved.map((u) => (
+                <Card key={u.id} className="p-4 flex items-center justify-between gap-3 animate-rise">
+                  <div className="min-w-0">
+                    <div className="font-semibold truncate">
+                      {u.first_name} {u.last_name} <span className="text-sm text-[var(--muted)]">(@{u.username})</span>
+                    </div>
+                    <div className="text-xs text-[var(--muted)] mt-1">
+                      <Badge tone="green">Approved</Badge>
+                    </div>
+                  </div>
+                  {u.is_admin && <Badge tone="amber">Admin</Badge>}
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </ProtectedRoute>
   );

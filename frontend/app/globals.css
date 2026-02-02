@@ -41,12 +41,22 @@
   }
 
   body {
-    background:
-      radial-gradient(1200px 600px at 90% -10%, rgba(15, 118, 110, 0.12), transparent 60%),
-      radial-gradient(900px 500px at 10% 0%, rgba(13, 148, 136, 0.08), transparent 55%),
-      linear-gradient(180deg, var(--bg-accent), var(--bg));
+    background: var(--bg);
     color: var(--text);
     font-family: var(--font-body, sans-serif);
+  }
+
+  body::after {
+    content: "";
+    position: fixed;
+    inset: -10% 0 0 0;
+    background:
+      radial-gradient(1200px 700px at 90% -10%, rgba(15, 118, 110, 0.18), transparent 60%),
+      radial-gradient(900px 600px at 10% 0%, rgba(13, 148, 136, 0.12), transparent 55%),
+      linear-gradient(180deg, var(--bg-accent), transparent 65%);
+    opacity: 0.9;
+    pointer-events: none;
+    z-index: -1;
   }
 
   body::before {

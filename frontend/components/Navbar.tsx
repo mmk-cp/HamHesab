@@ -3,20 +3,36 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
+import React from "react";
 import { useAuth } from "@/store/authStore";
 import ThemeToggle from "@/components/ThemeToggle";
 
 const nav = [
   { href: "/dashboard", label: "داشبورد", icon: "🏠" },
-  { href: "/dashboard#settlement", label: "تسویه", icon: "🧾" },
   { href: "/admin", label: "ادمین", icon: "🛡️", admin: true },
 ];
 
 export default function Navbar() {
   const path = usePathname();
   const { user, logout } = useAuth();
+  const [hash, setHash] = React.useState("");
 
   const items = nav.filter((n) => !n.admin || user?.is_admin);
+  const hashLinks = items.filter((it) => it.href.includes("#"));
+  const hashMatchesNav = hashLinks.some((it) => hash === `#${it.href.split("#")[1]}`);
+
+  React.useEffect(() => {
+    const update = () => setHash(window.location.hash || "");
+    update();
+    window.addEventListener("hashchange", update);
+    return () => window.removeEventListener("hashchange", update);
+  }, []);
+
+  const isActive = (href: string) => {
+    const [base, frag] = href.split("#");
+    if (frag) return path.startsWith(base) && hash === `#${frag}`;
+    return path.startsWith(base) && !hashMatchesNav;
+  };
 
   return (
     <>
@@ -31,7 +47,7 @@ export default function Navbar() {
           {user && (
             <nav className="hidden md:flex items-center gap-2">
               {items.map((it) => {
-                const active = path.startsWith(it.href.split("#")[0]);
+                const active = isActive(it.href);
                 return (
                   <Link
                     key={it.href}
@@ -73,14 +89,14 @@ export default function Navbar() {
       {/* Bottom nav (mobile) */}
       {user && (
         <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-[var(--border)] bg-[var(--surface)] sm:hidden">
-          <div className="container-page py-2 grid grid-cols-3 gap-2">
+          <div className={clsx("container-page py-2 grid gap-2", items.length >= 3 ? "grid-cols-3" : "grid-cols-2")}>
             {items.slice(0, 3).map((it) => (
               <Link
                 key={it.href}
                 href={it.href}
                 className={clsx(
                   "flex flex-col items-center justify-center gap-0.5 rounded-xl py-2 text-xs border transition",
-                  path.startsWith(it.href.split("#")[0])
+                  isActive(it.href)
                     ? "border-transparent bg-[var(--accent)] text-white"
                     : "border-[var(--border)] bg-[var(--surface-2)] text-[var(--text)]"
                 )}
