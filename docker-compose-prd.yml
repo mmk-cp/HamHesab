@@ -21,7 +21,7 @@ services:
       DATABASE_URL: mysql+pymysql://friends:friends_pass@db:3306/friends_split?charset=utf8mb4
       SECRET_KEY: change_me_very_long_random
       ACCESS_TOKEN_EXPIRE_MINUTES: 10080
-      CORS_ORIGINS: https://hesab-api.tabaro.ir
+      CORS_ORIGINS: "*"
     restart: unless-stopped
     depends_on:
       db:
