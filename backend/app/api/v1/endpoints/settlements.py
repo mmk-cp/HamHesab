@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from decimal import Decimal, ROUND_HALF_UP
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import select, and_, or_
 
@@ -24,6 +24,8 @@ def settlement_for_month(
     current: User = Depends(require_approved_user),
     scope: str | None = None,
 ) -> SettlementReport:
+    if scope == "all" and not current.is_admin:
+        raise HTTPException(status_code=403, detail="Only admins can request group settlement")
     is_admin_view = current.is_admin and scope == "all"
     users = db.scalars(select(User).where(User.is_approved == True)).all()  # noqa: E712
     user_ids = [u.id for u in users]
