@@ -5,21 +5,22 @@ services:
     environment:
       MYSQL_DATABASE: friends_split
       MYSQL_USER: friends
-      MYSQL_PASSWORD: friends_pass
+      MYSQL_PASSWORD: dsfhbhj4b543b5jhbj
       MYSQL_ROOT_PASSWORD: root_pass
     volumes:
-      - db_data:/var/lib/mysql
+      - /home/tabaro/friendssplit/data/mysql:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot_pass"]
       interval: 5s
       timeout: 5s
       retries: 20
+    restart: unless-stopped
 
   backend:
-    build: ./backend
+    image: registry.tabaro.ir/friends-split-back:latest
     environment:
-      DATABASE_URL: mysql+pymysql://friends:friends_pass@db:3306/friends_split?charset=utf8mb4
-      SECRET_KEY: change_me_very_long_random
+      DATABASE_URL: mysql+pymysql://friends:dsfhbhj4b543b5jhbj@db:3306/friends_split?charset=utf8mb4
+      SECRET_KEY: kjdsfnkj43kb543b5kk52j35bn5555dfgdf6afz
       ACCESS_TOKEN_EXPIRE_MINUTES: 10080
       CORS_ORIGINS: "*"
     restart: unless-stopped
@@ -28,34 +29,27 @@ services:
         condition: service_healthy
 
   frontend:
-    build:
-      context: ./frontend
-      args:
-        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-https://hesab.tabaro.ir/api/v1}
+    image: registry.tabaro.ir/friends-split-front:latest
     environment:
       NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-https://hesab.tabaro.ir/api/v1}
     depends_on:
       - backend
+    restart: unless-stopped
 
   phpmyadmin:
-    image: 'lscr.io/linuxserver/phpmyadmin:latest'
+    image: lscr.io/linuxserver/phpmyadmin:latest
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Europe/Madrid
+      - TZ=Europe/Berlin
       - PMA_ARBITRARY=0
       - PMA_HOST=db
       - PMA_PORT=3306
     volumes:
-      - 'phpmyadmin-config:/config'
+      - /home/tabaro/friendssplit/data/phpmyadmin:/config
     healthcheck:
-      test:
-        - CMD
-        - curl
-        - '-f'
-        - 'http://127.0.0.1:80'
-      interval: 2s
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:80"]
+      interval: 5s
       timeout: 10s
       retries: 15
-volumes:
-  db_data:
+    restart: unless-stopped
